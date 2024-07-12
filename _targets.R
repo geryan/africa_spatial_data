@@ -58,11 +58,32 @@ list(
   # here using gross built height (AGBH not ANBH)
   tar_terra_rast(
     built_height,
-    rast(x = "data/raster/MAP_covariates/GHSL_2023/GHS_BUILT_H_AGBH_R23A.2018.Annual.Data.1km.mean.tif")  |>
-      crop(africa_mask) |>
-      mask(africa_mask) |>
-      set_layer_names("built_height") |>
-      writereadrast(filename = "outputs/raster/built_height.tif")
+    prepare_single_layer(
+      africa_mask,
+      filename = "data/raster/MAP_covariates/GHSL_2023/GHS_BUILT_H_AGBH_R23A.2018.Annual.Data.1km.mean.tif",
+      lyrnm = "built_height",
+      outputdir = "outputs/raster/"
+    )
+  ),
+
+  ##### accessibility
+  # Accessibility to cities for a nonimal year 2015.
+  # "Cities" are defined as contiguous areas with 1,500
+  # or more inhabitants per square kilometre or a majority
+  # of built-up land cover types coincident with a
+  # population centre of at least 50,000 inhabitants. Pixel
+  # values show estimated fasted land-based travel time to
+  # the nearest city in minutes. Produced by Dr Dan Weiss
+  # (https://doi.org/10.1038/nature25181).
+
+  tar_terra_rast(
+    accessibility,
+    prepare_single_layer(
+      africa_mask,
+      filename = "data/raster/MAP_covariates/Accessibility/accessibility_to_cities_2015_v1.0.tif",
+      lyrnm = "accessibility",
+      outputdir = "outputs/raster/"
+    )
   )
 
   # environmental vars
