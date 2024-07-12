@@ -25,6 +25,7 @@ list(
     )
   ),
 
+  ########################################################
   # anthropocentric vars
 
   # Worldpop
@@ -39,10 +40,19 @@ list(
   tar_terra_rast(
     pop_all,
     prepare_pop(
-      popdir = "data/raster/MAP_covariates/WorldPop/",
       africa_mask,
+      popdir = "data/raster/MAP_covariates/WorldPop/",
       popfilename = "outputs/raster/pop_all.tif"
     )
+  ),
+  # for single layer select most recent (2020)
+  tar_terra_rast(
+    pop,
+    pop_all[[6]] |>
+      writereadrast(
+        filename = "outputs/raster/pop.tif",
+        layernames = "pop"
+      )
   ),
 
   ### GHS_BUILT_H
@@ -52,7 +62,7 @@ list(
   # values are average height of the built surfaces in
   # meters. The versions here have been aggregated from the
   # 100m originals first using a mean in the original
-  # mollweide projection, and then reporjected to wgs84
+  # mollweide projection, and then reprojected to wgs84
   # using bilinear resampling.
 
   # here using gross built height (AGBH not ANBH)
@@ -84,7 +94,36 @@ list(
       lyrnm = "accessibility",
       outputdir = "outputs/raster/"
     )
+  ),
+
+  ########################################################
+  # environmental vars
+
+  #### EVI
+  # EVI is derived from the 8-daily global 1km MODIS
+  # v6 MCD43D62, MCD43D63 and MCD43D64 products.
+  # This is then gapfilled using an algorithm
+  # developed by Dr Dan Weiss and implemented
+  # globally by Dr Harry Gibson
+  # (https://doi.org/10.1016/j.isprsjprs.2014.10.001).
+  # The gapfilled outputs are aggregated temporally
+  # to the annual level using a mean.
+  tar_terra_rast(
+    evi_all,
+    prepare_evi(
+      africa_mask,
+      evidir = "data/raster/MAP_covariates/EVI/",
+      evifilename = "outputs/raster/evi_all.tif"
+    )
+  ),
+  tar_terra_rast(
+    evi_mean,
+    mean(evi_all) |>
+      writereadrast(
+        filename = "outputs/raster/evi_mean.tif",
+        layernames = "evi_mean"
+      )
   )
 
-  # environmental vars
+
 )
