@@ -1,4 +1,4 @@
-prepare_pop <- function(popdir, africa_mask){
+prepare_pop <- function(popdir, africa_mask, popfilename){
 
   pop <- list.files(
     path = popdir,
@@ -36,7 +36,10 @@ prepare_pop <- function(popdir, africa_mask){
 
   pop <- mask(pop, africa_mask)
 
-  pop
+  writereadrast(
+    pop,
+    filename = popfilename
+  )
 
 
 }

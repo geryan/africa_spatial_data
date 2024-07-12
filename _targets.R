@@ -40,7 +40,8 @@ list(
     pop_all,
     prepare_pop(
       popdir = "data/raster/MAP_covariates/WorldPop/",
-      africa_mask
+      africa_mask,
+      popfilename = "outputs/raster/pop_all.tif"
     )
   ),
 
@@ -59,7 +60,9 @@ list(
     built_height,
     rast(x = "data/raster/MAP_covariates/GHSL_2023/GHS_BUILT_H_AGBH_R23A.2018.Annual.Data.1km.mean.tif")  |>
       crop(africa_mask) |>
-      mask(africa_mask)
+      mask(africa_mask) |>
+      set_layer_names("built_height") |>
+      writereadrast(filename = "outputs/raster/built_height.tif")
   )
 
   # environmental vars
