@@ -1,4 +1,8 @@
-prepare_pop <- function(popdir, africa_mask, popfilename){
+prepare_pop <- function(
+    africa_mask,
+    popdir,
+    popfilename
+    ){
 
   pop <- list.files(
     path = popdir,
