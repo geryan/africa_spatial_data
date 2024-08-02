@@ -1,0 +1,23 @@
+prepare_categorical_layer <- function(
+    africa_mask,
+    filename,
+    lyrnm,
+    outputdir = "outputs/raster/",
+    lookup
+){
+  z <- rast(x = filename)  |>
+    crop(africa_mask) |>
+    mask(africa_mask)
+
+  levels(z) <- lookup
+
+  writereadrast(
+    z,
+    filename = sprintf(
+      "%s/%s.tif",
+      outputdir,
+      lyrnm
+    ),
+    layernames = lyrnm
+  )
+}
