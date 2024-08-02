@@ -11,7 +11,7 @@ prepare_categorical_layer <- function(
 
   levels(z) <- lookup
 
-  writereadrast(
+  r <- writereadrast(
     z,
     filename = sprintf(
       "%s/%s.tif",
@@ -20,4 +20,8 @@ prepare_categorical_layer <- function(
     ),
     layernames = lyrnm
   )
+
+  levels(r) <- lookup
+
+  r
 }
