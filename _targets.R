@@ -9,8 +9,7 @@ tar_option_set(
     "sdmtools",
     "geodata",
     "geotargets",
-    "ggplot2",
-    "rasterVis"
+    "ggplot2"
   ),
   format = "qs"
 )
@@ -26,14 +25,36 @@ list(
     sdmtools::make_africa_mask(
       filename = "data/raster/africa_mask.tif",
       type = "raster",
-      res = "high",
-      overwrite = TRUE
+      res = "high"
+    )
+  ),
+
+  tar_target(
+    amp,
+    plot_and_save(
+      africa_mask,
+      "am.png",
+      title = "Africa",
+      rm_guides = TRUE,
+      end = 0.3
     )
   ),
 
   tar_target(
     africa_mask_plot,
-    levelplot()
+    ggplot() +
+      geom_spatraster(
+        data = africa_mask
+      ) +
+      scale_fill_viridis_c(
+        option = "G",
+        begin = 1,
+        end = 0.3,
+        na.value = "white"
+      ) +
+      theme_void() +
+      labs(title = "Africa") +
+      guides(fill = "none")
   ),
 
   tar_target(
@@ -80,7 +101,7 @@ list(
 
   tar_target(
     pop_plot,
-    ggplot() +
+    print(ggplot() +
       geom_spatraster(
         data = pop
       ) +
@@ -91,18 +112,40 @@ list(
         na.value = "white"
       ) +
       theme_void() +
-      labs(title = "Population")
+      labs(title = "Population")) |>
+      ggsave(
+        filename = "outputs/figures/population.png",
+        plot = _,
+        width = 2000,
+        height = 1600,
+        units = "px"
+      ),
+    format = "file"
   ),
-  # tar_target(
-  #   pop_plot_save,
-  #   ggsave(
-  #     filename = "outputs/figures/population.png",
-  #     plot = pop_plot,
-  #     width = 2000,
-  #     height = 1600,
-  #     units = "px"
-  #   )
-  # ),
+#
+#   tar_target(
+#     pop_plot_save,
+#     ggsave(
+#       filename = "outputs/figures/population.png",
+#       plot = pop_plot,
+#       width = 2000,
+#       height = 1600,
+#       units = "px"
+#     ),
+#     format = "file"
+#   ),
+#
+# tar_target(
+#   africa_mask_plot_save,
+#   ggsave(
+#     filename = "outputs/figures/africa_mask.png",
+#     plot = africa_mask_plot,
+#     width = 2000,
+#     height = 1600,
+#     units = "px"
+#   ),
+#   format = "file"
+# ),
 
 
   ##### accessibility
