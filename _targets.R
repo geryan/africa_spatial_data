@@ -211,6 +211,15 @@ list(
     )
   ),
 
+  tar_target(
+    plot_built_surface,
+    plot_and_save(
+      built_surface,
+      title = "Built Surface",
+      fill_label = "Sq. m"
+    )
+  ),
+
 
 
   ########################################################
@@ -240,6 +249,15 @@ list(
         filename = "outputs/raster/evi_mean.tif",
         layernames = "evi_mean"
       )
+  ),
+
+  tar_target(
+    plot_evi_mean,
+    plot_and_save(
+      evi_mean,
+      title = "Enhanced Vegetation Index",
+      fill_label = "EVI"
+    )
   )
 
 )
