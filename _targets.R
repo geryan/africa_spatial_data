@@ -8,12 +8,17 @@ tar_option_set(
     "dplyr",
     "sdmtools",
     "geodata",
-    "geotargets"
+    "geotargets",
+    "ggplot2",
+    "rasterVis"
   ),
   format = "qs"
 )
 
 tar_source(files = "R")
+
+
+
 
 list(
   tar_terra_rast(
@@ -22,9 +27,27 @@ list(
       filename = "data/raster/africa_mask.tif",
       type = "raster",
       res = "high",
+      overwrite = TRUE
     )
   ),
 
+  tar_target(
+    africa_mask_plot,
+    levelplot()
+  ),
+
+  tar_target(
+    africa_mask_plot_save,
+    ggsave(
+      filename = "outputs/figures/africa_mask.png",
+      plot = africa_mask_plot,
+      width = 2000,
+      height = 1600,
+      units = "px"
+    ),
+    format = "file"
+  ),
+#
   ########################################################
   # anthropocentric vars
 
@@ -55,26 +78,32 @@ list(
       )
   ),
 
-  ### GHS_BUILT_H
-  # Average of the Gross Building Height (AGBH) and Average
-  # of the Net Building Height (ANBH) for 2018 from GHSL
-  # (https://ghsl.jrc.ec.europa.eu/ghs_buH2023.php). Pixel
-  # values are average height of the built surfaces in
-  # meters. The versions here have been aggregated from the
-  # 100m originals first using a mean in the original
-  # mollweide projection, and then reprojected to wgs84
-  # using bilinear resampling.
-
-  # here using gross built height (AGBH not ANBH)
-  tar_terra_rast(
-    built_height,
-    prepare_single_layer(
-      africa_mask,
-      filename = "data/raster/MAP_covariates/GHSL_2023/GHS_BUILT_H_AGBH_R23A.2018.Annual.Data.1km.mean.tif",
-      lyrnm = "built_height",
-      outputdir = "outputs/raster/"
-    )
+  tar_target(
+    pop_plot,
+    ggplot() +
+      geom_spatraster(
+        data = pop
+      ) +
+      scale_fill_viridis_c(
+        option = "G",
+        begin = 1,
+        end = 0,
+        na.value = "white"
+      ) +
+      theme_void() +
+      labs(title = "Population")
   ),
+  # tar_target(
+  #   pop_plot_save,
+  #   ggsave(
+  #     filename = "outputs/figures/population.png",
+  #     plot = pop_plot,
+  #     width = 2000,
+  #     height = 1600,
+  #     units = "px"
+  #   )
+  # ),
+
 
   ##### accessibility
   # Accessibility to cities for a nonimal year 2015.
@@ -95,6 +124,79 @@ list(
       outputdir = "outputs/raster/"
     )
   ),
+
+  ### GHS_BUILT_H (built height)
+  # Average of the Gross Building Height (AGBH) and Average
+  # of the Net Building Height (ANBH) for 2018 from GHSL
+  # (https://ghsl.jrc.ec.europa.eu/ghs_buH2023.php). Pixel
+  # values are average height of the built surfaces in
+  # meters. The versions here have been aggregated from the
+  # 100m originals first using a mean in the original
+  # mollweide projection, and then reprojected to wgs84
+  # using bilinear resampling.
+
+  # here using gross built height (AGBH not ANBH; though
+  # this layer also available)
+
+  tar_terra_rast(
+    built_height,
+    prepare_single_layer(
+      africa_mask,
+      filename = "data/raster/MAP_covariates/GHSL_2023/GHS_BUILT_H_AGBH_R23A.2018.Annual.Data.1km.mean.tif",
+      lyrnm = "built_height",
+      outputdir = "outputs/raster/"
+    )
+  ),
+
+  # #### GHS SMOD (settlement)
+  # # Settlement grids delineating and classifying settlement
+  # # typologies via a logic of population size, population
+  # # and built-up area densities
+  # # (https://ghsl.jrc.ec.europa.eu/ghs_smod2019.php).
+  # # The pixel classification criteria are available in the
+  # # supporting data package PDF.
+
+  tar_terra_rast(
+    settlement,
+    prepare_categorical_layer(
+      africa_mask,
+      filename = "data/raster/MAP_covariates/GHSL_2023/GHS_SMOD_R23A.2020.Annual.Data.1km.Data.tif",
+      lyrnm = "settlement",
+      outputdir = "outputs/raster/",
+      lookup = tribble(
+        ~value, ~category,
+        30, "URBAN CENTRE",
+        23, "DENSE URBAN CLUSTER",
+        22, "SEMI-DENSE URBAN CLUSTER",
+        21, "SUBURBAN OR PERI-URBAN",
+        13, "RURAL CLUSTER",
+        12, "LOW DENSITY RURAL",
+        11, "VERY LOW DENSITY RURAL",
+        10, "WATER"
+      ) %>%
+        as.data.frame()
+    )
+  ),
+
+  ### GHS_BUILT_S (built surface)
+  # Built-up surface grid for 2020 from GHSL, for total
+  # residential and non-residential
+  # (https://ghsl.jrc.ec.europa.eu/ghs_buS2023.php). Pixel
+  # values are built square meters in the grid cell. The
+  # version here has been reprojected from the 1km
+  # mollweide dataset to wgs84 using bilinear resampling.
+
+  tar_terra_rast(
+    built_surface,
+    prepare_single_layer(
+      africa_mask,
+      filename = "data/raster/MAP_covariates/GHSL_2023/GHS_BUILT_S_R23A.2020.Annual.Data.1km.Data.tif",
+      lyrnm = "built_surface",
+      outputdir = "outputs/raster/"
+    )
+  ),
+
+
 
   ########################################################
   # environmental vars
@@ -124,6 +226,5 @@ list(
         layernames = "evi_mean"
       )
   )
-
 
 )
