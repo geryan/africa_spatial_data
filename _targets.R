@@ -30,45 +30,16 @@ list(
   ),
 
   tar_target(
-    amp,
+    plot_africa_mask,
     plot_and_save(
       africa_mask,
-      "am.png",
+      "africa_mask.png",
       title = "Africa",
       rm_guides = TRUE,
       end = 0.3
     )
   ),
 
-  tar_target(
-    africa_mask_plot,
-    ggplot() +
-      geom_spatraster(
-        data = africa_mask
-      ) +
-      scale_fill_viridis_c(
-        option = "G",
-        begin = 1,
-        end = 0.3,
-        na.value = "white"
-      ) +
-      theme_void() +
-      labs(title = "Africa") +
-      guides(fill = "none")
-  ),
-
-  tar_target(
-    africa_mask_plot_save,
-    ggsave(
-      filename = "outputs/figures/africa_mask.png",
-      plot = africa_mask_plot,
-      width = 2000,
-      height = 1600,
-      units = "px"
-    ),
-    format = "file"
-  ),
-#
   ########################################################
   # anthropocentric vars
 
@@ -100,52 +71,14 @@ list(
   ),
 
   tar_target(
-    pop_plot,
-    print(ggplot() +
-      geom_spatraster(
-        data = pop
-      ) +
-      scale_fill_viridis_c(
-        option = "G",
-        begin = 1,
-        end = 0,
-        na.value = "white"
-      ) +
-      theme_void() +
-      labs(title = "Population")) |>
-      ggsave(
-        filename = "outputs/figures/population.png",
-        plot = _,
-        width = 2000,
-        height = 1600,
-        units = "px"
-      ),
-    format = "file"
+    plot_pop,
+    plot_and_save(
+      pop,
+      filename = "population.png",
+      title = "Population",
+      fill_label = "Population\ndensity"
+    )
   ),
-#
-#   tar_target(
-#     pop_plot_save,
-#     ggsave(
-#       filename = "outputs/figures/population.png",
-#       plot = pop_plot,
-#       width = 2000,
-#       height = 1600,
-#       units = "px"
-#     ),
-#     format = "file"
-#   ),
-#
-# tar_target(
-#   africa_mask_plot_save,
-#   ggsave(
-#     filename = "outputs/figures/africa_mask.png",
-#     plot = africa_mask_plot,
-#     width = 2000,
-#     height = 1600,
-#     units = "px"
-#   ),
-#   format = "file"
-# ),
 
 
   ##### accessibility
@@ -165,6 +98,15 @@ list(
       filename = "data/raster/MAP_covariates/Accessibility/accessibility_to_cities_2015_v1.0.tif",
       lyrnm = "accessibility",
       outputdir = "outputs/raster/"
+    )
+  ),
+
+  tar_target(
+    plot_accessibility,
+    plot_and_save(
+      accessibility,
+      title = "Accessibility",
+      fill_label = "Minutes\ntravel\ntime\nto city"
     )
   ),
 
@@ -191,6 +133,15 @@ list(
     )
   ),
 
+  tar_target(
+    plot_built_height,
+    plot_and_save(
+      built_height,
+      title = "Built height",
+      fill_label = "Average\nheight"
+    )
+  ),
+
   # #### GHS SMOD (settlement)
   # # Settlement grids delineating and classifying settlement
   # # typologies via a logic of population size, population
@@ -206,6 +157,27 @@ list(
       filename = "data/raster/MAP_covariates/GHSL_2023/GHS_SMOD_R23A.2020.Annual.Data.1km.Data.tif",
       lyrnm = "settlement",
       outputdir = "outputs/raster/",
+      lookup = tribble(
+        ~value, ~category,
+        30, "URBAN CENTRE",
+        23, "DENSE URBAN CLUSTER",
+        22, "SEMI-DENSE URBAN CLUSTER",
+        21, "SUBURBAN OR PERI-URBAN",
+        13, "RURAL CLUSTER",
+        12, "LOW DENSITY RURAL",
+        11, "VERY LOW DENSITY RURAL",
+        10, "WATER"
+      ) %>%
+        as.data.frame()
+    )
+  ),
+
+  tar_target(
+    plot_settlement,
+    plot_and_save(
+      settlement,
+      title = "Settlement",
+      fill_label = "Settlement\ntype",
       lookup = tribble(
         ~value, ~category,
         30, "URBAN CENTRE",
