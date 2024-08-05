@@ -2,7 +2,8 @@ prepare_single_layer <- function(
     africa_mask,
     filename,
     lyrnm,
-    outputdir = "outputs/raster/"
+    outputdir = "outputs/raster/",
+    overwrite = TRUE
 ){
   rast(x = filename)  |>
     crop(africa_mask) |>
@@ -13,6 +14,7 @@ prepare_single_layer <- function(
         outputdir,
         lyrnm
       ),
-      layernames = lyrnm
+      layernames = lyrnm,
+      overwrite = overwrite
     )
 }
