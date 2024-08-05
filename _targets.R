@@ -220,6 +220,85 @@ list(
     )
   ),
 
+  ### GHS_BUILT_V
+  # The spatial raster dataset depicts the distribution
+  # of built-up volumes, expressed as number of cubic
+  # metres.
+  # Built-up volume grid for 2020 from GHSL, for total
+  # residential and non-residential
+  # (https://ghsl.jrc.ec.europa.eu/ghs_buV2023.php).
+  # Pixel values are built cubic meters in the grid cell.
+  # The version here has been reprojected from the 1km
+  # mollweide dataset to wgs84 using bilinear resampling.
+
+  tar_terra_rast(
+    built_volume,
+    prepare_single_layer(
+      africa_mask,
+      filename = "data/raster/MAP_covariates/GHSL_2023/GHS_BUILT_V_R23A.2020.Annual.Data.1km.Data.tif",
+      lyrnm = "built_volume",
+      outputdir = "outputs/raster/"
+    )
+  ),
+
+  tar_target(
+    plot_built_volume,
+    plot_and_save(
+      built_volume,
+      title = "Built Volume",
+      fill_label = "Cu. m"
+    )
+  ),
+
+  # tar_target(
+  #   plot_log10_built_volume,
+  #   p_log10_built_volume(
+  #     built_volume,
+  #     africa_mask
+  #   )
+  # ),
+
+  tar_target(
+    plot_log10_built_volume,
+    plot_and_save(
+      log10(built_volume),
+      title = "log Built Volume",
+      fill_label = "log10\ncu. m"
+    )
+  ),
+
+  # GHS_BUILT_C
+  # Grids which dilineate the boundaries of human settlements
+  # and describe their inner characteristics in terms of the
+  # morphology of the built environment and the functional
+  # use (https://ghsl.jrc.ec.europa.eu/ghs_buC2023.php). The
+  # pixel classification criteria are available in the
+  # supporting data package PDF. The percentage grids here
+  # have been aggregated from the 10m classification grid,
+  # first by getting the per-class percentages at 1km
+  # resolution in the original mollweide coordinate system,
+  # and then reprojecting the output to wgs84 using bilinear
+  # resampling.
+
+  # classes
+  # 00 : other (doesn't fit these classifications)
+  # 01 : MSZ, open spaces, low vegetation surfaces NDVI <= 0.3
+  # 02 : MSZ, open spaces, medium vegetation surfaces 0.3 < NDVI <=0.5
+  # 03 : MSZ, open spaces, high vegetation surfaces NDVI > 0.5
+  # 04 : MSZ, open spaces, water surfaces LAND < 0.5
+  # 05 : MSZ, open spaces, road surfaces
+  # 11 : MSZ, built spaces, residential, building height <= 3m
+  # 12 : MSZ, built spaces, residential, 3m < building height <= 6m
+  # 13 : MSZ, built spaces, residential, 6m < building height <= 15m
+  # 14 : MSZ, built spaces, residential, 15m < building height <= 30m
+  # 15 : MSZ, built spaces, residential, building height > 30m
+  # 21 : MSZ, built spaces, non-residential, building height <= 3m
+  # 22 : MSZ, built spaces, non-residential, 3m < building height <= 6m
+  # 23 : MSZ, built spaces, non-residential, 6m < building height <= 15m
+  # 24 : MSZ, built spaces, non-residential, 15m < building height <= 30m
+  # 25 : MSZ, built spaces, non-residential, building height > 30m
+
+
 
 
   ########################################################
