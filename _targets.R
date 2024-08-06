@@ -316,10 +316,13 @@ list(
   # to the annual level using a mean.
   tar_terra_rast(
     evi_all,
-    prepare_evi(
+    prepare_multi_layer(
       africa_mask,
-      evidir = "data/raster/MAP_covariates/EVI/",
-      evifilename = "outputs/raster/evi_all.tif"
+      data_dir ="data/raster/MAP_covariates/EVI/",
+      output_filename = "outputs/raster/evi_all.tif",
+      layer_prefix = "evi",
+      file_id_prefix = ".*v6\\.",
+      file_id_suffix = "\\.Annual.*"
     )
   ),
 
@@ -470,11 +473,13 @@ list(
 
   tar_terra_rast(
     lst_day_all,
-    prepare_lst(
+    prepare_multi_layer(
       africa_mask,
-      lstdir = "data/raster/MAP_covariates/LST_Day/",
-      lstfilename = "outputs/raster/lst_day_all.tif",
-      type = "day"
+      data_dir ="data/raster/MAP_covariates/LST_Day/",
+      output_filename = "outputs/raster/lst_day_all.tif",
+      layer_prefix = "lst_day",
+      file_id_prefix = ".*v6\\.",
+      file_id_suffix = "\\.Annual.*"
     )
   ),
 
@@ -492,7 +497,7 @@ list(
     plot_and_save(
       lst_day_mean,
       title = "Daytime Land Surface Temperature",
-      fill_label = "LST day"
+      fill_label = "\u00B0C" # degree symbol C
     )
   ),
 
@@ -508,11 +513,13 @@ list(
 
   tar_terra_rast(
     lst_night_all,
-    prepare_lst(
+    prepare_multi_layer(
       africa_mask,
-      lstdir = "data/raster/MAP_covariates/LST_Night/",
-      lstfilename = "outputs/raster/lst_night_all.tif",
-      type = "night"
+      data_dir ="data/raster/MAP_covariates/LST_Night/",
+      output_filename = "outputs/raster/lst_night_all.tif",
+      layer_prefix = "lst_night",
+      file_id_prefix = ".*v6\\.",
+      file_id_suffix = "\\.Annual.*"
     )
   ),
 
@@ -530,7 +537,44 @@ list(
     plot_and_save(
       lst_night_mean,
       title = "Nighttime Land Surface Temperature",
-      fill_label = "LST night"
+      fill_label = "\u00B0C" # degree symbol C
+    )
+  ),
+
+  #### rainfall
+  # Annual rainfall totals from the CHIRPS dataset
+  # (https://www.chc.ucsb.edu/data/chirps).
+  # The 1km version here is a neareast-neighbour
+  # resample of the lower resolution data
+  # available from CHIRPS.
+
+  tar_terra_rast(
+    rainfall_all,
+    prepare_multi_layer(
+      africa_mask,
+      data_dir = "data/raster/MAP_covariates/Rainfall/",
+      output_filename = "outputs/raster/rainfall_all.tif",
+      layer_prefix = "rainfall",
+      file_id_prefix = ".*v2-0\\.",
+      file_id_suffix = "\\.Annual.*"
+    )
+  ),
+
+  tar_terra_rast(
+    rainfall_mean,
+    mean(rainfall_all) |>
+      writereadrast(
+        filename = "outputs/raster/rainfall_mean.tif",
+        layernames = "rainfall_mean"
+      )
+  ),
+
+  tar_target(
+    plot_rainfall_mean,
+    plot_and_save(
+      rainfall_mean,
+      title = "Rainfall Annual Mean",
+      fill_label = "mm"
     )
   ),
 
