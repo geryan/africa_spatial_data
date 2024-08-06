@@ -150,6 +150,22 @@ list(
   # # The pixel classification criteria are available in the
   # # supporting data package PDF.
 
+  tar_target(
+    settlement_lookup,
+    tribble(
+      ~value, ~category,
+      30, "URBAN CENTRE",
+      23, "DENSE URBAN CLUSTER",
+      22, "SEMI-DENSE URBAN CLUSTER",
+      21, "SUBURBAN OR PERI-URBAN",
+      13, "RURAL CLUSTER",
+      12, "LOW DENSITY RURAL",
+      11, "VERY LOW DENSITY RURAL",
+      10, "WATER"
+    ) %>%
+      as.data.frame()
+  ),
+
   tar_terra_rast(
     settlement,
     prepare_categorical_layer(
@@ -157,18 +173,7 @@ list(
       filename = "data/raster/MAP_covariates/GHSL_2023/GHS_SMOD_R23A.2020.Annual.Data.1km.Data.tif",
       lyrnm = "settlement",
       outputdir = "outputs/raster/",
-      lookup = tribble(
-        ~value, ~category,
-        30, "URBAN CENTRE",
-        23, "DENSE URBAN CLUSTER",
-        22, "SEMI-DENSE URBAN CLUSTER",
-        21, "SUBURBAN OR PERI-URBAN",
-        13, "RURAL CLUSTER",
-        12, "LOW DENSITY RURAL",
-        11, "VERY LOW DENSITY RURAL",
-        10, "WATER"
-      ) %>%
-        as.data.frame()
+      lookup = settlement_lookup
     )
   ),
 
@@ -178,18 +183,7 @@ list(
       settlement,
       title = "Settlement",
       fill_label = "Settlement\ntype",
-      lookup = tribble(
-        ~value, ~category,
-        30, "URBAN CENTRE",
-        23, "DENSE URBAN CLUSTER",
-        22, "SEMI-DENSE URBAN CLUSTER",
-        21, "SUBURBAN OR PERI-URBAN",
-        13, "RURAL CLUSTER",
-        12, "LOW DENSITY RURAL",
-        11, "VERY LOW DENSITY RURAL",
-        10, "WATER"
-      ) %>%
-        as.data.frame()
+      lookup = settlement_lookup
     )
   ),
 
@@ -328,6 +322,7 @@ list(
       evifilename = "outputs/raster/evi_all.tif"
     )
   ),
+
   tar_terra_rast(
     evi_mean,
     mean(evi_all) |>
@@ -344,7 +339,7 @@ list(
       title = "Enhanced Vegetation Index",
       fill_label = "EVI"
     )
-  )
+  ),
 
   ### Landcover
   # Landcover classification data derived from MODIS v6
@@ -372,6 +367,180 @@ list(
   # 15 Snow_And_Ice
   # 16 Barren_Or_Sparsely_Populated
   # 17 Water
+
+  tar_target(
+    landcover_lookup,
+    tibble::tribble(
+      ~value, ~category,
+      00, "Unclassified",
+      01, "Evergreen_Needleleaf_Forest",
+      02, "Evergreen_Broadleaf_Forest",
+      03, "Deciduous_Needleleaf_Forest",
+      04, "Deciduous_Broadleaf_Forest",
+      05, "Mixed_Forest",
+      06, "Closed_Shrublands",
+      07, "Open_Shrublands",
+      08, "Woody_Savannas",
+      09, "Savannas",
+      10, "Grasslands",
+      11, "Permanent_Wetlands",
+      12, "Croplands",
+      13, "Urban_And_Built_Up",
+      14, "Cropland_Natural_Vegetation_Mosaic",
+      15, "Snow_And_Ice",
+      16, "Barren_Or_Sparsely_Populated",
+      17, "Water"
+    ) %>%
+      as.data.frame()
+  ),
+
+  tar_terra_rast(
+    landcover_all,
+    prepare_landcover(
+      africa_mask,
+      landcoverdir = "data/raster/MAP_covariates/Landcover/",
+      landcoverfilename = "outputs/raster/landcover_all.tif",
+      lookup = landcover_lookup
+    )
+  ),
+
+  tar_terra_rast(
+    landcover,
+    landcover_all[[nlyr(landcover_all)]] |>
+      writereadrast(
+        filename = "outputs/raster/landcover.tif",
+        layernames = "landcover"
+      )
+  ),
+
+  tar_target(
+    plot_landcover,
+    plot_and_save(
+      landcover,
+      title = "Landcover",
+      fill_label = "Landcover\ntype",
+      lookup = landcover_lookup
+    )
+  ),
+
+  ### Arid
+  # Just made from the barren land class in landcover
+  tar_target(
+    arid_lookup,
+    tibble::tribble(
+      ~value, ~category,
+      00, "Arid",
+      01, "Not Arid"
+    ) %>%
+      as.data.frame()
+  ),
+
+  tar_terra_rast(
+    arid,
+    make_arid(
+      landcover,
+      arid_lookup,
+      filename = "outputs/raster/arid.tif"
+    )
+  ),
+
+  tar_target(
+    plot_arid,
+    plot_and_save(
+      arid,
+      title = "Aridity",
+      fill_label = "Arid",
+      lookup = arid_lookup,
+      begin = 0.2,
+      end = 0.65
+    )
+  ),
+
+  ######################## Land surface temperature
+
+  #### LST Day
+  # LST_Day is derived from the 8-daily global 1km
+  # MODIS MOD11A2 v6 products. This is then
+  # gapfilled using an algorithm developed by Dr
+  # Dan Weiss and implemented globally by Dr Harry
+  # Gibson
+  # (https://doi.org/10.1016/j.isprsjprs.2014.10.001).
+  # The gapfilled outputs are aggregated
+  # temporally to the annual level using a mean.
+
+  tar_terra_rast(
+    lst_day_all,
+    prepare_lst(
+      africa_mask,
+      lstdir = "data/raster/MAP_covariates/LST_Day/",
+      lstfilename = "outputs/raster/lst_day_all.tif",
+      type = "day"
+    )
+  ),
+
+  tar_terra_rast(
+    lst_day_mean,
+    mean(lst_day_all) |>
+      writereadrast(
+        filename = "outputs/raster/lst_day_mean.tif",
+        layernames = "lst_day_mean"
+      )
+  ),
+
+  tar_target(
+    plot_lst_day_mean,
+    plot_and_save(
+      lst_day_mean,
+      title = "Daytime Land Surface Temperature",
+      fill_label = "LST day"
+    )
+  ),
+
+  #### LST NIGHT
+  # LST_NIGHT is derived from the 8-daily global 1km
+  # MODIS MOD11A2 v6 products. This is then
+  # gapfilled using an algorithm developed by Dr
+  # Dan Weiss and implemented globally by Dr Harry
+  # Gibson
+  # (https://doi.org/10.1016/j.isprsjprs.2014.10.001).
+  # The gapfilled outputs are aggregated
+  # temporally to the annual level using a mean.
+
+  tar_terra_rast(
+    lst_night_all,
+    prepare_lst(
+      africa_mask,
+      lstdir = "data/raster/MAP_covariates/LST_Night/",
+      lstfilename = "outputs/raster/lst_night_all.tif",
+      type = "night"
+    )
+  ),
+
+  tar_terra_rast(
+    lst_night_mean,
+    mean(lst_night_all) |>
+      writereadrast(
+        filename = "outputs/raster/lst_night_mean.tif",
+        layernames = "lst_night_mean"
+      )
+  ),
+
+  tar_target(
+    plot_lst_night_mean,
+    plot_and_save(
+      lst_night_mean,
+      title = "Nighttime Land Surface Temperature",
+      fill_label = "LST night"
+    )
+  ),
+
+
+  #####################
+
+  tar_target(
+    so_i_dont_have_to_go_backward_and_add_commas,
+    print("Targets great in theory but kinda annoying to work with")
+  )
 
 
 
