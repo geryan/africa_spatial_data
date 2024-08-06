@@ -3,7 +3,8 @@ prepare_categorical_layer <- function(
     filename,
     lyrnm,
     outputdir = "outputs/raster/",
-    lookup
+    lookup,
+    overwrite = TRUE
 ){
   z <- rast(x = filename)  |>
     crop(africa_mask) |>
@@ -18,7 +19,8 @@ prepare_categorical_layer <- function(
       outputdir,
       lyrnm
     ),
-    layernames = lyrnm
+    layernames = lyrnm,
+    overwrite = overwrite
   )
 
   levels(r) <- lookup
