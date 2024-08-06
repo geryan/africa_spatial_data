@@ -578,6 +578,91 @@ list(
     )
   ),
 
+  ######## Tasselated cap brightness
+  # TCB
+  # TCB is derived from the 8-daily global 1km MODIS
+  # v6 MCD43D62, MCD43D63 and MCD43D64 products.
+  # This is then gapfilled using an algorithm
+  # developed by Dr Dan Weiss and implemented
+  # globally by Dr Harry Gibson
+  # (https://doi.org/10.1016/j.isprsjprs.2014.10.001).
+  # The gapfilled outputs are aggregated temporally
+  # to the annual level using a mean.
+
+
+  tar_terra_rast(
+    tcb_all,
+    prepare_multi_layer(
+      africa_mask,
+      data_dir = "data/raster/MAP_covariates/TCB/",
+      output_filename = "outputs/raster/tcb_all.tif",
+      layer_prefix = "tcb",
+      file_id_prefix = ".*v6\\.",
+      file_id_suffix = "\\.Annual.*"
+    )
+  ),
+
+  tar_terra_rast(
+    tcb_mean,
+    mean(tcb_all) |>
+      writereadrast(
+        filename = "outputs/raster/tcb_mean.tif",
+        layernames = "tcb_mean"
+      )
+  ),
+
+  tar_target(
+    plot_tcb_mean,
+    plot_and_save(
+      tcb_mean,
+      title = "Tasselated Cap Brightness",
+      fill_label = "TCB"
+    )
+  ),
+
+  ####### Tasselated cap wetness
+  # TCW
+  # TCW is derived from the 8-daily global 1km MODIS
+  # v6 MCD43D62, MCD43D63 and MCD43D64 products.
+  # This is then gapfilled using an algorithm
+  # developed by Dr Dan Weiss and implemented
+  # globally by Dr Harry Gibson
+  # (https://doi.org/10.1016/j.isprsjprs.2014.10.001).
+  # The gapfilled outputs are aggregated temporally
+  # to the annual level using a mean.
+
+
+  tar_terra_rast(
+    tcw_all,
+    prepare_multi_layer(
+      africa_mask,
+      data_dir = "data/raster/MAP_covariates/TCW/",
+      output_filename = "outputs/raster/tcw_all.tif",
+      layer_prefix = "tcw",
+      file_id_prefix = ".*v6\\.",
+      file_id_suffix = "\\.Annual.*"
+    )
+  ),
+
+  tar_terra_rast(
+    tcw_mean,
+    mean(tcw_all) |>
+      writereadrast(
+        filename = "outputs/raster/tcw_mean.tif",
+        layernames = "tcw_mean"
+      )
+  ),
+
+  tar_target(
+    plot_tcw_mean,
+    plot_and_save(
+      tcw_mean,
+      title = "Tasselated Cap Wetness",
+      fill_label = "TCW"
+    )
+  ),
+
+
 
   #####################
 
