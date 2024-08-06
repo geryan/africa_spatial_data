@@ -298,7 +298,14 @@ list(
   # 24 : MSZ, built spaces, non-residential, 15m < building height <= 30m
   # 25 : MSZ, built spaces, non-residential, building height > 30m
 
-
+  tar_terra_rast(
+    built_c,
+    prepare_built_c(
+      africa_mask,
+      bcdir = "data/raster/MAP_covariates/GHSL_2023/GHS-BUILT-C/",
+      bcfilename = "outputs/raster/built_c.tif"
+    )
+  ),
 
 
   ########################################################
@@ -338,5 +345,36 @@ list(
       fill_label = "EVI"
     )
   )
+
+  ### Landcover
+  # Landcover classification data derived from MODIS v6
+  # MCD12Q1, using the IGBP classification. Annual
+  # majority rasters (class number covering the majority
+  # of each pixel) are available, derived and aggregated
+  # from the 500m original datasets.
+  #
+  # IGBP Landcover Classes:
+  # 00 Unclassified
+  # 01 Evergreen_Needleleaf_Forest
+  # 02 Evergreen_Broadleaf_Forest
+  # 03 Deciduous_Needleleaf_Forest
+  # 04 Deciduous_Broadleaf_Forest
+  # 05 Mixed_Forest
+  # 06 Closed_Shrublands
+  # 07 Open_Shrublands
+  # 08 Woody_Savannas
+  # 09 Savannas
+  # 10 Grasslands
+  # 11 Permanent_Wetlands
+  # 12 Croplands
+  # 13 Urban_And_Built_Up
+  # 14 Cropland_Natural_Vegetation_Mosaic
+  # 15 Snow_And_Ice
+  # 16 Barren_Or_Sparsely_Populated
+  # 17 Water
+
+
+
+
 
 )
