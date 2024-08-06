@@ -301,6 +301,26 @@ list(
     )
   ),
 
+  ########### Cropland
+  # via `geodata` via https://maps.qed.ai/map/geosurvey_h2o_nnet_crp_predictions#lat=1.56012&lng=16.75000&zoom=4.0&layers=geosurvey_h2o_nnet_crp_predictions
+  tar_terra_rast(
+    cropland,
+    get_cropland(
+      africa_mask,
+      filename = "outputs/raster/cropland.tif"
+    )
+  ),
+
+  tar_target(
+    plot_cropland,
+    plot_and_save(
+      cropland,
+      title = "Cropland",
+      fill_label = "%"
+    )
+  ),
+
+
 
   ########################################################
   # environmental vars
@@ -662,6 +682,101 @@ list(
     )
   ),
 
+  #### Wind speed
+  # via `geodata` via bioclim
+
+  tar_terra_rast(
+    windspeed_all,
+    get_bioclim(
+      africa_mask,
+      filename = "outputs/raster/windspeed.tif",
+      bioclim_var = "wind",
+      layer_prefix = "windspeed"
+    )
+  ),
+
+  tar_terra_rast(
+    windspeed_mean,
+    mean(windspeed_all) |>
+      writereadrast(
+        filename = "outputs/raster/windspeed_mean.tif",
+        layernames = "windspeed_mean"
+      )
+  ),
+
+  tar_target(
+    plot_windspeed,
+    plot_and_save(
+      windspeed_mean,
+      filename = "windspeed.png",
+      title = "Wind Speed Annual Mean",
+      fill_label = expression(paste("m", "s"^{-1}))
+    )
+  ),
+
+  #### Incident Solar Radiation
+  # via `geodata` via bioclim
+
+  tar_terra_rast(
+    solrad_all,
+    get_bioclim(
+      africa_mask,
+      filename = "outputs/raster/solrad.tif",
+      bioclim_var = "srad",
+      layer_prefix = "solrad"
+    )
+  ),
+
+  tar_terra_rast(
+    solrad_mean,
+    mean(solrad_all) |>
+      writereadrast(
+        filename = "outputs/raster/solrad_mean.tif",
+        layernames = "solrad_mean"
+      )
+  ),
+
+  tar_target(
+    plot_solrad,
+    plot_and_save(
+      solrad_mean,
+      filename = "solrad.png",
+      title = "Incident Solar Radiation",
+      fill_label = expression(paste("kJ", "m"^{-2}, "d"^{-1}))
+    )
+  ),
+
+  #### Vapour pressure
+  # via `geodata` via bioclim
+
+  tar_terra_rast(
+    pressure_all,
+    get_bioclim(
+      africa_mask,
+      filename = "outputs/raster/pressure.tif",
+      bioclim_var = "vapr",
+      layer_prefix = "pressure"
+    )
+  ),
+
+  tar_terra_rast(
+    pressure_mean,
+    mean(pressure_all) |>
+      writereadrast(
+        filename = "outputs/raster/pressure_mean.tif",
+        layernames = "pressure_mean"
+      )
+  ),
+
+  tar_target(
+    plot_pressure,
+    plot_and_save(
+      pressure_mean,
+      filename = "pressure.png",
+      title = "Vapour Pressure",
+      fill_label = "kPa"
+    )
+  ),
 
 
   #####################

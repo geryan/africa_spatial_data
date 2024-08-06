@@ -19,7 +19,6 @@ make_arid <- function(
     filename = filename,
     overwrite = TRUE,
     layernames = "arid"
-  ) |>
-    set_levels(levs = arid_lookup)
+  )
 
 }
