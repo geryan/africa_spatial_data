@@ -20,6 +20,9 @@ tar_source(files = "R")
 
 
 list(
+
+  ## Image alignment / plotting layers
+
   tar_terra_rast(
     africa_mask,
     sdmtools::make_africa_mask(
@@ -37,6 +40,81 @@ list(
       title = "Africa",
       rm_guides = TRUE,
       end = 0.3
+    )
+  ),
+
+
+
+  tar_terra_rast(
+    cod_mask,
+    sdmtools::make_africa_mask(
+      type = "raster",
+      res = "high",
+      countries = "COD"
+    ) |>
+      crop(
+        y = make_africa_mask(
+          type = "vector",
+          countries = "COD"
+        )
+      ) |>
+      writereadrast(
+        filename = "data/raster/cod_mask.tif"
+      )
+  ),
+
+  tar_terra_rast(
+    nga_mask,
+    sdmtools::make_africa_mask(
+      type = "raster",
+      res = "high",
+      countries = "NGA"
+    ) |>
+      crop(
+        y = make_africa_mask(
+          type = "vector",
+          countries = "NGA"
+        )
+      ) |>
+      writereadrast(
+        filename = "data/raster/nga_mask.tif"
+      )
+  ),
+
+  tar_terra_rast(
+    tza_mask,
+    sdmtools::make_africa_mask(
+      type = "raster",
+      res = "high",
+      countries = "TZA"
+    ) |>
+      crop(
+        y = make_africa_mask(
+          type = "vector",
+          countries = "TZA"
+        )
+      ) |>
+      writereadrast(
+        filename = "data/raster/TZA_mask.tif"
+      )
+  ),
+
+
+  tar_terra_sprc(
+    country_masks,
+    sprc(
+      cod_mask,
+      nga_mask,
+      tza_mask
+    )
+  ),
+
+  tar_target(
+    country_mask_names,
+    c(
+      "COD",
+      "NGA",
+      "TZA"
     )
   ),
 
@@ -76,7 +154,8 @@ list(
       pop,
       filename = "population.png",
       title = "Population",
-      fill_label = "Population\ndensity"
+      fill_label = "Population\ndensity",
+
     )
   ),
 
@@ -319,6 +398,12 @@ list(
       fill_label = "%"
     )
   ),
+
+  ###### Human settlement probability
+  # The prediction of human settlement probabilities uses
+  # a gaussian kernel model trained on a million-point
+  # dataset collected using Geosurvey.
+  # https://maps.qed.ai/map/RSPKDs#lat=5.62965&lng=5.30090&zoom=8.0&layers=RSPKDs
 
 
 
@@ -775,6 +860,35 @@ list(
       filename = "pressure.png",
       title = "Vapour Pressure",
       fill_label = "kPa"
+    )
+  ),
+
+
+  ######################
+
+  # Combine static layers
+
+  tar_terra_rast(
+    africa_static_vars,
+    c(
+      accessibility,
+      arid,
+      built_height,
+      built_surface,
+      built_volume,
+      cropland,
+      evi_mean,
+      #landcover, # factorial
+      lst_day_mean,
+      lst_night_mean,
+      pop,
+      pressure_mean,
+      rainfall_mean,
+      #settlement, # factorial
+      solrad_mean,
+      tcb_mean,
+      tcw_mean,
+      windspeed_mean
     )
   ),
 
