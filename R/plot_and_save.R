@@ -9,7 +9,9 @@ plot_and_save <- function(
     begin = 1,
     end = 0,
     fill_lims = NULL,
-    lookup = NULL
+    lookup = NULL,
+    sub_plot_masks = NULL,
+    sub_plot_names
   ){
 
   if(is.null(filename)){
@@ -92,5 +94,29 @@ plot_and_save <- function(
     height = 1600,
     units = "px"
   )
+
+  if(!is.null(sub_plot_masks)){
+    for(i in 1:length(sub_plot_masks)){
+      plot_and_save(
+        r = r |>
+          crop(sub_plot_masks[i]) |>
+          mask(sub_plot_masks[i]),
+        filename = sprintf(
+          "%s_%s",
+          sub_plot_names[i],
+          filename
+        ),
+        title = title, # map title
+        fill_label,
+        rm_guides,
+        output_dir,
+        option,
+        begin,
+        end,
+        fill_lims,
+        lookup
+      )
+    }
+  }
 
 }

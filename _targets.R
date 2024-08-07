@@ -155,7 +155,8 @@ list(
       filename = "population.png",
       title = "Population",
       fill_label = "Population\ndensity",
-
+      sub_plot_masks = country_masks,
+      sub_plot_names = country_mask_names
     )
   ),
 
@@ -185,7 +186,9 @@ list(
     plot_and_save(
       accessibility,
       title = "Accessibility",
-      fill_label = "Minutes\ntravel\ntime\nto city"
+      fill_label = "Minutes\ntravel\ntime\nto city",
+      sub_plot_masks = country_masks,
+      sub_plot_names = country_mask_names
     )
   ),
 
@@ -217,7 +220,9 @@ list(
     plot_and_save(
       built_height,
       title = "Built height",
-      fill_label = "Average\nheight"
+      fill_label = "Average\nheight",
+      sub_plot_masks = country_masks,
+      sub_plot_names = country_mask_names
     )
   ),
 
@@ -262,7 +267,9 @@ list(
       settlement,
       title = "Settlement",
       fill_label = "Settlement\ntype",
-      lookup = settlement_lookup
+      lookup = settlement_lookup,
+      sub_plot_masks = country_masks,
+      sub_plot_names = country_mask_names
     )
   ),
 
@@ -289,7 +296,9 @@ list(
     plot_and_save(
       built_surface,
       title = "Built Surface",
-      fill_label = "Sq. m"
+      fill_label = "Sq. m",
+      sub_plot_masks = country_masks,
+      sub_plot_names = country_mask_names
     )
   ),
 
@@ -319,7 +328,9 @@ list(
     plot_and_save(
       built_volume,
       title = "Built Volume",
-      fill_label = "Cu. m"
+      fill_label = "Cu. m",
+      sub_plot_masks = country_masks,
+      sub_plot_names = country_mask_names
     )
   ),
 
@@ -336,7 +347,9 @@ list(
     plot_and_save(
       log10(built_volume),
       title = "log Built Volume",
-      fill_label = "log10\ncu. m"
+      fill_label = "log10\ncu. m",
+      sub_plot_masks = country_masks,
+      sub_plot_names = country_mask_names
     )
   ),
 
@@ -395,7 +408,9 @@ list(
     plot_and_save(
       cropland,
       title = "Cropland",
-      fill_label = "%"
+      fill_label = "%",
+      sub_plot_masks = country_masks,
+      sub_plot_names = country_mask_names
     )
   ),
 
@@ -445,7 +460,9 @@ list(
     plot_and_save(
       evi_mean,
       title = "Enhanced Vegetation Index",
-      fill_label = "EVI"
+      fill_label = "EVI",
+      sub_plot_masks = country_masks,
+      sub_plot_names = country_mask_names
     )
   ),
 
@@ -527,7 +544,9 @@ list(
       landcover,
       title = "Landcover",
       fill_label = "Landcover\ntype",
-      lookup = landcover_lookup
+      lookup = landcover_lookup,
+      sub_plot_masks = country_masks,
+      sub_plot_names = country_mask_names
     )
   ),
 
@@ -560,7 +579,9 @@ list(
       fill_label = "Arid",
       lookup = arid_lookup,
       begin = 0.2,
-      end = 0.65
+      end = 0.65,
+      sub_plot_masks = country_masks,
+      sub_plot_names = country_mask_names
     )
   ),
 
@@ -602,7 +623,9 @@ list(
     plot_and_save(
       lst_day_mean,
       title = "Daytime Land Surface Temperature",
-      fill_label = "\u00B0C" # degree symbol C
+      fill_label = "\u00B0C", # degree symbol C
+      sub_plot_masks = country_masks,
+      sub_plot_names = country_mask_names
     )
   ),
 
@@ -642,7 +665,9 @@ list(
     plot_and_save(
       lst_night_mean,
       title = "Nighttime Land Surface Temperature",
-      fill_label = "\u00B0C" # degree symbol C
+      fill_label = "\u00B0C", # degree symbol C
+      sub_plot_masks = country_masks,
+      sub_plot_names = country_mask_names
     )
   ),
 
@@ -679,7 +704,9 @@ list(
     plot_and_save(
       rainfall_mean,
       title = "Rainfall Annual Mean",
-      fill_label = "mm"
+      fill_label = "mm",
+      sub_plot_masks = country_masks,
+      sub_plot_names = country_mask_names
     )
   ),
 
@@ -721,7 +748,9 @@ list(
     plot_and_save(
       tcb_mean,
       title = "Tasselated Cap Brightness",
-      fill_label = "TCB"
+      fill_label = "TCB",
+      sub_plot_masks = country_masks,
+      sub_plot_names = country_mask_names
     )
   ),
 
@@ -763,7 +792,9 @@ list(
     plot_and_save(
       tcw_mean,
       title = "Tasselated Cap Wetness",
-      fill_label = "TCW"
+      fill_label = "TCW",
+      sub_plot_masks = country_masks,
+      sub_plot_names = country_mask_names
     )
   ),
 
@@ -795,7 +826,9 @@ list(
       windspeed_mean,
       filename = "windspeed.png",
       title = "Wind Speed Annual Mean",
-      fill_label = expression(paste("m", "s"^{-1}))
+      fill_label = expression(paste("m", "s"^{-1})),
+      sub_plot_masks = country_masks,
+      sub_plot_names = country_mask_names
     )
   ),
 
@@ -827,7 +860,9 @@ list(
       solrad_mean,
       filename = "solrad.png",
       title = "Incident Solar Radiation",
-      fill_label = expression(paste("kJ", "m"^{-2}, "d"^{-1}))
+      fill_label = expression(paste("kJ", "m"^{-2}, "d"^{-1})),
+      sub_plot_masks = country_masks,
+      sub_plot_names = country_mask_names
     )
   ),
 
@@ -859,7 +894,9 @@ list(
       pressure_mean,
       filename = "pressure.png",
       title = "Vapour Pressure",
-      fill_label = "kPa"
+      fill_label = "kPa",
+      sub_plot_masks = country_masks,
+      sub_plot_names = country_mask_names
     )
   ),
 
