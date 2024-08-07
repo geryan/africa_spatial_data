@@ -408,6 +408,7 @@ list(
     plot_and_save(
       cropland,
       title = "Cropland",
+<<<<<<< HEAD
       fill_label = "%",
       sub_plot_masks = country_masks,
       sub_plot_names = country_mask_names
@@ -420,6 +421,12 @@ list(
   # dataset collected using Geosurvey.
   # https://maps.qed.ai/map/RSPKDs#lat=5.62965&lng=5.30090&zoom=8.0&layers=RSPKDs
 
+=======
+      fill_label = "%"
+    )
+  ),
+
+>>>>>>> 8b2799707344a4ede7e79791a92dd8d056da9d98
 
 
   ########################################################
@@ -826,9 +833,13 @@ list(
       windspeed_mean,
       filename = "windspeed.png",
       title = "Wind Speed Annual Mean",
+<<<<<<< HEAD
       fill_label = expression(paste("m", "s"^{-1})),
       sub_plot_masks = country_masks,
       sub_plot_names = country_mask_names
+=======
+      fill_label = expression(paste("m", "s"^{-1}))
+>>>>>>> 8b2799707344a4ede7e79791a92dd8d056da9d98
     )
   ),
 
@@ -860,9 +871,13 @@ list(
       solrad_mean,
       filename = "solrad.png",
       title = "Incident Solar Radiation",
+<<<<<<< HEAD
       fill_label = expression(paste("kJ", "m"^{-2}, "d"^{-1})),
       sub_plot_masks = country_masks,
       sub_plot_names = country_mask_names
+=======
+      fill_label = expression(paste("kJ", "m"^{-2}, "d"^{-1}))
+>>>>>>> 8b2799707344a4ede7e79791a92dd8d056da9d98
     )
   ),
 
@@ -894,6 +909,7 @@ list(
       pressure_mean,
       filename = "pressure.png",
       title = "Vapour Pressure",
+<<<<<<< HEAD
       fill_label = "kPa",
       sub_plot_masks = country_masks,
       sub_plot_names = country_mask_names
@@ -926,6 +942,9 @@ list(
       tcb_mean,
       tcw_mean,
       windspeed_mean
+=======
+      fill_label = "kPa"
+>>>>>>> 8b2799707344a4ede7e79791a92dd8d056da9d98
     )
   ),
 
