@@ -408,7 +408,6 @@ list(
     plot_and_save(
       cropland,
       title = "Cropland",
-<<<<<<< HEAD
       fill_label = "%",
       sub_plot_masks = country_masks,
       sub_plot_names = country_mask_names
@@ -421,13 +420,26 @@ list(
   # dataset collected using Geosurvey.
   # https://maps.qed.ai/map/RSPKDs#lat=5.62965&lng=5.30090&zoom=8.0&layers=RSPKDs
 
-=======
-      fill_label = "%"
+  tar_terra_rast(
+    settlement_prob,
+    prepare_single_layer_qed(
+      africa_mask,
+      filename = "data/raster/RSPKDs.tif/RSPKDs.tif",
+      lyrnm = "settlement_prob",
     )
   ),
 
->>>>>>> 8b2799707344a4ede7e79791a92dd8d056da9d98
-
+  tar_target(
+    plot_settlement_prob,
+    plot_and_save(
+      cropland,
+      filename = "settlement_prob.tif",
+      title = "Human Settlement Probability",
+      fill_label = "Probability?",
+      sub_plot_masks = country_masks,
+      sub_plot_names = country_mask_names
+    )
+  ),
 
   ########################################################
   # environmental vars
@@ -833,13 +845,9 @@ list(
       windspeed_mean,
       filename = "windspeed.png",
       title = "Wind Speed Annual Mean",
-<<<<<<< HEAD
       fill_label = expression(paste("m", "s"^{-1})),
       sub_plot_masks = country_masks,
       sub_plot_names = country_mask_names
-=======
-      fill_label = expression(paste("m", "s"^{-1}))
->>>>>>> 8b2799707344a4ede7e79791a92dd8d056da9d98
     )
   ),
 
@@ -871,13 +879,9 @@ list(
       solrad_mean,
       filename = "solrad.png",
       title = "Incident Solar Radiation",
-<<<<<<< HEAD
       fill_label = expression(paste("kJ", "m"^{-2}, "d"^{-1})),
       sub_plot_masks = country_masks,
       sub_plot_names = country_mask_names
-=======
-      fill_label = expression(paste("kJ", "m"^{-2}, "d"^{-1}))
->>>>>>> 8b2799707344a4ede7e79791a92dd8d056da9d98
     )
   ),
 
@@ -909,8 +913,34 @@ list(
       pressure_mean,
       filename = "pressure.png",
       title = "Vapour Pressure",
-<<<<<<< HEAD
       fill_label = "kPa",
+      sub_plot_masks = country_masks,
+      sub_plot_names = country_mask_names
+    )
+  ),
+
+  #### Soil data
+  # via `geodata`
+
+  # clay
+
+  tar_terra_rast(
+    soil_clay,
+    get_soil_af(
+      africa_mask,
+      filename = "outputs/raster/soil_clay.tif",
+      var = "clay",
+      layername = "soil_clay"
+    )
+  ),
+
+  tar_target(
+    plot_soil_clay,
+    plot_and_save(
+      soil_clay,
+      filename = "soil_clay.png",
+      title = "Clay",
+      fill_label = "%",
       sub_plot_masks = country_masks,
       sub_plot_names = country_mask_names
     )
@@ -938,13 +968,12 @@ list(
       pressure_mean,
       rainfall_mean,
       #settlement, # factorial
+      settlement_prob,
+      soil_clay,
       solrad_mean,
       tcb_mean,
       tcw_mean,
       windspeed_mean
-=======
-      fill_label = "kPa"
->>>>>>> 8b2799707344a4ede7e79791a92dd8d056da9d98
     )
   ),
 
