@@ -118,6 +118,32 @@ list(
     )
   ),
 
+  tar_terra_rast(
+    easting,
+    init(
+      africa_mask,
+      fun ="x"
+    ) |>
+      mask(africa_mask) |>
+      writereadrast(
+        filename = "outputs/raster/easting.tif",
+        layernames = "easting"
+      )
+  ),
+
+  tar_terra_rast(
+    northing,
+    init(
+      africa_mask,
+      fun ="y"
+    ) |>
+      mask(africa_mask) |>
+      writereadrast(
+        filename = "outputs/raster/northing.tif",
+        layernames = "northing"
+      )
+  ),
+
   ########################################################
   # anthropocentric vars
 
@@ -973,8 +999,63 @@ list(
       solrad_mean,
       tcb_mean,
       tcw_mean,
-      windspeed_mean
-    )
+      windspeed_mean,
+      easting,
+      northing
+    ) |>
+      writereadrast(
+        filename = "outputs/raster/africa_static_vars.tif"
+      )
+  ),
+
+  tar_terra_rast(
+    africa_static_vars_std,
+    c(
+      accessibility |>
+        scale(),
+      arid,
+      built_height |>
+        scale(),
+      built_surface |>
+        scale(),
+      built_volume |>
+        scale(),
+      cropland |>
+        scale(),
+      evi_mean |>
+        scale(),
+      #landcover, # factorial
+      lst_day_mean |>
+        scale(),
+      lst_night_mean |>
+        scale(),
+      pop |>
+        scale(),
+      pressure_mean |>
+        scale(),
+      rainfall_mean |>
+        scale(),
+      #settlement, # factorial
+      settlement_prob |>
+        scale(),
+      soil_clay |>
+        scale(),
+      solrad_mean |>
+        scale(),
+      tcb_mean |>
+        scale(),
+      tcw_mean |>
+        scale(),
+      windspeed_mean |>
+        scale(),
+      easting |>
+        scale(),
+      northing |>
+        scale()
+    ) |>
+      writereadrast(
+        filename = "outputs/raster/africa_static_vars_std.tif"
+      )
   ),
 
 
