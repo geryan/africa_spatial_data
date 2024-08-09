@@ -147,6 +147,22 @@ list(
   ########################################################
   # anthropocentric vars
 
+  ## Research travel time by country
+  # custom layer from this project
+  #
+  tar_terra_rast(
+    research_tt_by_country,
+    rast("data/raster/tt_by_country.tif") |>
+      crop(africa_mask) |>
+      mask(africa_mask) |>
+      writereadrast(
+        filename = "outputs/raster/reseach_tt_by_country.tif",
+        layernames = "research_tt_by_country"
+      )
+  ),
+
+
+
   # Worldpop
   # Annual 1km UN-adjusted population counts
   # from WorldPop v3
@@ -978,8 +994,9 @@ list(
   # Combine static layers
 
   tar_terra_rast(
-    africa_static_vars,
+    combined_africa_static_vars,
     c(
+      research_tt_by_country,
       accessibility,
       arid,
       built_height,
@@ -1004,13 +1021,15 @@ list(
       northing
     ) |>
       writereadrast(
-        filename = "outputs/raster/africa_static_vars.tif"
+        filename = "outputs/raster/combined_africa_static_vars.tif"
       )
   ),
 
   tar_terra_rast(
-    africa_static_vars_std,
+    combined_africa_static_vars_std,
     c(
+      research_tt_by_country |>
+        scale(),
       accessibility |>
         scale(),
       arid,
@@ -1054,8 +1073,51 @@ list(
         scale()
     ) |>
       writereadrast(
+        filename = "outputs/raster/combined_africa_static_vars_std.tif"
+      )
+  ),
+
+  tar_target(
+    valid_cells_vect_combined,
+    valid_cells_check(
+      africa_mask,
+      combined_africa_static_vars_std
+    )
+  ),
+
+  tar_terra_rast(
+    new_mask,
+    mask_from_all(combined_africa_static_vars_std) |>
+      writereadrast(
+        filename = "outputs/raster/new_mask.tif",
+        layernames = "new_mask"
+      )
+  ),
+
+  tar_terra_rast(
+    africa_static_vars,
+    combined_africa_static_vars |>
+      mask(new_mask) |>
+      writereadrast(
+        filename = "outputs/raster/africa_static_vars.tif"
+      )
+  ),
+
+  tar_terra_rast(
+    africa_static_vars_std,
+    combined_africa_static_vars_std |>
+      mask(new_mask) |>
+      writereadrast(
         filename = "outputs/raster/africa_static_vars_std.tif"
       )
+  ),
+
+  tar_target(
+    valid_cells_vect,
+    valid_cells_check(
+      new_mask,
+      africa_static_vars_std
+    )
   ),
 
 
