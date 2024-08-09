@@ -859,6 +859,34 @@ list(
     )
   ),
 
+  ## Surface water
+  # Global Surface Water Explorer dataset
+  # Joint Research Centre Data Catalogue
+  # downloaded from
+  # https://data.jrc.ec.europa.eu/dataset/jrc-gswe-global-surface-water-explorer-v1
+  # using script data/download_surface_water.sh
+  tar_terra_rast(
+    surface_water,
+    prepare_surface_water(
+      africa_mask
+    )
+  ),
+
+  tar_target(
+    plot_windspeed,
+    plot_and_save(
+      surface_water,
+      filename = "surface_water.png",
+      title = "Surface Water",
+      fill_label = "%",
+      sub_plot_masks = country_masks,
+      sub_plot_names = country_mask_names
+    )
+  ),
+
+
+  ###### Geodata
+
   #### Wind speed
   # via `geodata` via bioclim
 
