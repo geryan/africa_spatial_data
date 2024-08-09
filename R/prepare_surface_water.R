@@ -1,4 +1,10 @@
-prepare_surface_water <- function(africa_mask){
+prepare_surface_water <- function(africa_mask, overwrite = FALSE){
+
+  if(!overwrite){
+    if(file.exists("outputs/raster/sw.tif")){
+      return(rast("outputs/raster/sw.tif"))
+    }
+  }
 
   # process standing water tiles
   z <- import_rasts(
@@ -92,7 +98,6 @@ prepare_surface_water <- function(africa_mask){
       filename = "outputs/raster/sw.tif",
       overwrite = TRUE
     )
-
   r
 
 }
