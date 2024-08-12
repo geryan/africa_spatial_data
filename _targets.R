@@ -95,7 +95,7 @@ list(
         )
       ) |>
       writereadrast(
-        filename = "data/raster/TZA_mask.tif"
+        filename = "data/raster/tza_mask.tif"
       )
   ),
 
@@ -155,10 +155,23 @@ list(
     rast("data/raster/tt_by_country.tif") |>
       crop(africa_mask) |>
       mask(africa_mask) |>
+      std_rast(reverse = TRUE) |>
       writereadrast(
         filename = "outputs/raster/reseach_tt_by_country.tif",
         layernames = "research_tt_by_country"
       )
+  ),
+
+  tar_target(
+    plot_research_tt_by_country,
+    plot_and_save(
+      research_tt_by_country,
+      filename = "research_tt_by_country.png",
+      title = "Inverse relative travel time from research station",
+      fill_label = "",
+      sub_plot_masks = country_masks,
+      sub_plot_names = country_mask_names
+    )
   ),
 
 
@@ -869,11 +882,17 @@ list(
     surface_water,
     prepare_surface_water(
       africa_mask
-    )
+    ) |>
+      crop(africa_mask) |>
+      mask(africa_mask) |>
+      writereadrast(
+        filename = "outputs/raster/surface_water.tif",
+        layernames = "surface_water"
+      )
   ),
 
   tar_target(
-    plot_windspeed,
+    plot_surface_water,
     plot_and_save(
       surface_water,
       filename = "surface_water.png",
@@ -989,7 +1008,46 @@ list(
     )
   ),
 
-  #### Soil data
+  # elevation
+  # via `geodata`
+
+  tar_terra_rast(
+    elevation,
+    get_elevation(
+      africa_mask,
+      filename = "outputs/raster/elevation.tif"
+    )
+  ),
+
+  tar_target(
+    plot_elevation,
+    plot_and_save(
+      elevation,
+      title = "Elevation",
+      fill_label = "m",
+      sub_plot_masks = country_masks,
+      sub_plot_names = country_mask_names
+    )
+  ),
+
+  # footprint
+  # via `geodata`
+  # from https://www.nature.com/articles/sdata201667
+  tar_terra_rast(
+    footprint,
+    footprint(
+      year = 2009,
+      path = "data/raster/geodata"
+    ) |>
+      crop(africa_mask) |>
+      mask(africa_mask) |>
+      writereadrast(
+        filename = "outputs/raster/footprint.tif",
+        layername = "footprint"
+      )
+  ),
+
+  # Soil data
   # via `geodata`
 
   # clay
@@ -1016,6 +1074,34 @@ list(
     )
   ),
 
+  ######################
+
+  # microclimatic suitability for gambiae
+
+  tar_terra_rast(
+    ag_microclim,
+    rast(x = "data/raster/An_gambiae_mechanistic_abundance.tif") |>
+      max() |>
+      match_ref(africa_mask) |>
+      std_rast() |>
+      writereadrast(
+        filename = "outputs/raster/ag_microclim.tif",
+        layername = "ag_microclim"
+      )
+  ),
+
+  tar_target(
+    plot_ag_microclim,
+    plot_and_save(
+      ag_microclim,
+      filename = "ag_microclim.png",
+      title = expression(italic("Anopheles gambiae")~microclimate~suitability),
+      fill_label = "Relative\nsuitability",
+      sub_plot_masks = country_masks,
+      sub_plot_names = country_mask_names
+    )
+  ),
+
 
   ######################
 
@@ -1024,6 +1110,7 @@ list(
   tar_terra_rast(
     combined_africa_static_vars,
     c(
+      ag_microclim,
       research_tt_by_country,
       accessibility,
       arid,
@@ -1031,7 +1118,9 @@ list(
       built_surface,
       built_volume,
       cropland,
+      elevation,
       evi_mean,
+      footprint,
       #landcover, # factorial
       lst_day_mean,
       lst_night_mean,
@@ -1042,6 +1131,7 @@ list(
       settlement_prob,
       soil_clay,
       solrad_mean,
+      surface_water,
       tcb_mean,
       tcw_mean,
       windspeed_mean,
@@ -1056,8 +1146,8 @@ list(
   tar_terra_rast(
     combined_africa_static_vars_std,
     c(
-      research_tt_by_country |>
-        scale(),
+      ag_microclim,
+      research_tt_by_country,
       accessibility |>
         scale(),
       arid,
@@ -1069,7 +1159,11 @@ list(
         scale(),
       cropland |>
         scale(),
+      elevation |>
+        scale(),
       evi_mean |>
+        scale(),
+      footprint |>
         scale(),
       #landcover, # factorial
       lst_day_mean |>
@@ -1088,6 +1182,8 @@ list(
       soil_clay |>
         scale(),
       solrad_mean |>
+        scale(),
+      surface_water |>
         scale(),
       tcb_mean |>
         scale(),
