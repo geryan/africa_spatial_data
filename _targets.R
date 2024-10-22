@@ -9,7 +9,10 @@ tar_option_set(
     "sdmtools",
     "geodata",
     "geotargets",
-    "ggplot2"
+    "ggplot2",
+    "rgbif",
+    "readr",
+    "countrycode"
   ),
   format = "qs"
 )
@@ -118,6 +121,16 @@ list(
     )
   ),
 
+  tar_target(
+    africa_countries,
+    global_regions |>
+      filter(continent == "Africa") |>
+      select(country, iso2, iso3)
+  ),
+
+  ## Northing and easting layers
+
+  # easting
   tar_terra_rast(
     easting,
     init(
@@ -131,6 +144,7 @@ list(
       )
   ),
 
+  # northing
   tar_terra_rast(
     northing,
     init(
@@ -174,6 +188,21 @@ list(
     )
   ),
 
+  ## Culex gbif data
+
+  # Citation Info:
+  #   Please always cite the download DOI when using this data.
+  # https://www.gbif.org/citation-guidelines
+  # DOI: 10.15468/dl.xywxdt
+  # Citation:
+  #   GBIF Occurrence Download https://doi.org/10.15468/dl.xywxdt Accessed from R via rgbif (https://github.com/ropensci/rgbif) on 2024-10-14
+  tar_terra_rast(
+    culicidae_bias_lyr,
+    make_culicidae_bias_lyr(
+      africa_countries = africa_countries,
+      africa_mask
+    )
+  ),
 
 
   # Worldpop
