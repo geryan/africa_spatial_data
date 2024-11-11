@@ -12,7 +12,9 @@ tar_option_set(
     "ggplot2",
     "rgbif",
     "readr",
-    "countrycode"
+    "countrycode",
+    "tidyr",
+    "purrr"
   ),
   format = "qs"
 )

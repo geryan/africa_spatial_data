@@ -65,15 +65,59 @@ ymin <- extswm$ymin
 ymax <- extswm$ymax
 
 
+# simple split into 4 bits with 6 degree overlap
+# exts <- list(
+#   ext(xmin, xmin + (xmax-xmin)/2 + 3, ymin + (ymax-ymin)/2 - 3, ymax),
+#   ext(xmin + (xmax-xmin)/2 - 3, xmax, ymin + (ymax-ymin)/2 - 3, ymax),
+#   ext(xmin, xmin + (xmax-xmin)/2 + 3, ymin, ymin + (ymax-ymin)/2 + 3),
+#   ext(xmin + (xmax-xmin)/2 - 3, xmax, ymin, ymin + (ymax-ymin)/2 + 3)
+# )
 
-exts <- list(
-  ext(xmin, xmin + (xmax-xmin)/2 + 3, ymin + (ymax-ymin)/2 - 3, ymax),
-  ext(xmin + (xmax-xmin)/2 - 3, xmax, ymin + (ymax-ymin)/2 - 3, ymax),
-  ext(xmin, xmin + (xmax-xmin)/2 + 3, ymin, ymin + (ymax-ymin)/2 + 3),
-  ext(xmin + (xmax-xmin)/2 - 3, xmax, ymin, ymin + (ymax-ymin)/2 + 3)
+
+# split into 25 tiles with 3 degree overlap
+
+# make sequences of mid points of tiles
+xmids <- seq(
+  from = xmin,
+  to = xmax,
+  length.out = 6
 )
 
+ymids <- seq(
+  from = ymin,
+  to = ymax,
+  length.out = 6
+)
 
+# make trailing (west/south) and leading (east/north) edges by
+# adding or subtracting 1.5 degrees to mids for edges not on edge
+# of parent raster, i.e. first and last tiles
+xleading  <- c(xmids[2:5] + 1.5, xmids[6])
+xtrailing <- c(xmids[1], xmids[2:5] - 1.5)
+
+yleading  <- c(ymids[2:5] + 1.5, ymids[6])
+ytrailing <- c(ymids[1], ymids[2:5] - 1.5)
+
+# make sequence of all edges
+crop_dims <- expand_grid(
+  tibble(xtrailing, xleading),
+  tibble(ytrailing, yleading)
+)
+
+# convert edges to extent
+exts <- pmap(
+  .l = list(
+    xt = crop_dims$xtrailing,
+    xl = crop_dims$xleading,
+    yt = crop_dims$ytrailing,
+    yl = crop_dims$yleading
+  ),
+  .f = function(xt, xl, yt, yl){
+    ext(xt, xl, yt, yl)
+  }
+)
+
+# ma
 swm_cr <- lapply(
   exts,
   FUN = function(x, swm){
