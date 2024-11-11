@@ -198,13 +198,13 @@ list(
   # DOI: 10.15468/dl.xywxdt
   # Citation:
   #   GBIF Occurrence Download https://doi.org/10.15468/dl.xywxdt Accessed from R via rgbif (https://github.com/ropensci/rgbif) on 2024-10-14
-  tar_terra_rast(
-    culicidae_bias_lyr,
-    make_culicidae_bias_lyr(
-      africa_countries = africa_countries,
-      africa_mask
-    )
-  ),
+  # tar_terra_rast(
+  #   culicidae_bias_lyr,
+  #   make_culicidae_bias_lyr(
+  #     africa_countries = africa_countries,
+  #     africa_mask
+  #   )
+  # ),
 
 
   # Worldpop
