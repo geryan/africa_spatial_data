@@ -137,4 +137,53 @@ pop_ir <- c(pop_hist, pop_pred[[1:2]]) |>
   writereadrast(
     filename = "outputs/raster/ir/ir_pop.tif"
   )
-2
+
+
+##
+library(terra)
+library(sdmtools)
+pop_ir <- rast("outputs/raster/ir/ir_pop.tif")
+irs_ir <- rast("outputs/raster/ir/ir_irs.tif")
+itn_ir <- rast("outputs/raster/ir/ir_itn.tif")
+
+ngaben <- make_africa_mask(
+  type = "vector",
+  countries = c("NGA", "BEN")
+)
+
+pop_ir_ngaben <- pop_ir |>
+  crop(
+    x = _,
+    y = ngaben
+  ) |>
+  mask(
+    x = _,
+    mask = ngaben,
+    filename = "outputs/raster/ir/ir_pop_ngaben.tif",
+    overwrite = TRUE
+  )
+
+
+irs_ir_ngaben <- irs_ir |>
+  crop(
+    x = _,
+    y = ngaben
+  ) |>
+  mask(
+    x = _,
+    mask = ngaben,
+    filename = "outputs/raster/ir/ir_irs_ngaben.tif",
+    overwrite = TRUE
+  )
+
+itn_ir_ngaben <- itn_ir |>
+  crop(
+    x = _,
+    y = ngaben
+  ) |>
+  mask(
+    x = _,
+    mask = ngaben,
+    filename = "outputs/raster/ir/ir_itn_ngaben.tif",
+    overwrite = TRUE
+  )
