@@ -26,6 +26,12 @@
 # An stephensi
 # Vector modelling
 
+library(terra)
+library(targets)
+tar_load_globals()
+
+#ref <- rast("data/raster/MAP_covariates/africa_masks/")
+
 
 rast_multi_layer <- function(
     data_dir,
@@ -38,7 +44,8 @@ rast_multi_layer <- function(
 
   r <- list.files(
     path = data_dir,
-    full.names = TRUE
+    full.names = TRUE,
+    pattern = "*.tif$"
   ) %>%
     sapply(
       FUN = rast
@@ -115,6 +122,9 @@ itn_use <- prepare_multi_layer(
 )
 
 
+# population data
+# read in 2000-2020 historic data
+
 pop_hist <- prepare_multi_layer(
   africa_mask = ref,
   data_dir = "data/raster/MAP_covariates/pop_long_term/historic/",
@@ -124,6 +134,7 @@ pop_hist <- prepare_multi_layer(
   file_id_suffix = "\\.Annual.*"
 )
 
+# get predicted data for 2021-22
 pop_pred <- prepare_multi_layer(
   africa_mask = ref,
   data_dir = "data/raster/MAP_covariates/pop_long_term/projected/",
@@ -133,10 +144,89 @@ pop_pred <- prepare_multi_layer(
   file_id_suffix = "\\.Annual.*"
 )
 
+# combine and save
 pop_ir <- c(pop_hist, pop_pred[[1:2]]) |>
   writereadrast(
     filename = "outputs/raster/ir/ir_pop.tif"
   )
+
+
+evi_ir <- prepare_multi_layer(
+  africa_mask = ref,
+  data_dir = "data/raster/MAP_covariates/EVI/EVI_v061_5km_Annual_mean_mean/",
+  output_filename = "outputs/raster/ir/ir_evi.tif",
+  layer_prefix = "evi",
+  file_id_prefix = ".*v061\\.",
+  file_id_suffix = "\\.Annual.*"
+)
+
+lst_day_ir <- prepare_multi_layer(
+  africa_mask = ref,
+  data_dir = "data/raster/MAP_covariates/LST_Day/LST_Day_v061_5km_annual_mean_mean/",
+  output_filename = "outputs/raster/ir/ir_lst_day.tif",
+  layer_prefix = "lst_day",
+  file_id_prefix = ".*v061\\.",
+  file_id_suffix = "\\.Annual.*"
+)
+
+
+lst_night_ir <- prepare_multi_layer(
+  africa_mask = ref,
+  data_dir = "data/raster/MAP_covariates/LST_Night/LST_Night_v061_5km_annual_mean_mean/",
+  output_filename = "outputs/raster/ir/ir_lst_night.tif",
+  layer_prefix = "lst_night",
+  file_id_prefix = ".*v061\\.",
+  file_id_suffix = "\\.Annual.*"
+)
+
+tcb_ir <- prepare_multi_layer(
+  africa_mask = ref,
+  data_dir = "data/raster/MAP_covariates/TCB/TCB_v061_5km_Annual_mean_mean/",
+  output_filename = "outputs/raster/ir/ir_tcb.tif",
+  layer_prefix = "tcb",
+  file_id_prefix = ".*v061\\.",
+  file_id_suffix = "\\.Annual.*"
+)
+
+tcw_ir <- prepare_multi_layer(
+  africa_mask = ref,
+  data_dir = "data/raster/MAP_covariates/TCW/TCW_v061_5km_Annual_mean_mean/",
+  output_filename = "outputs/raster/ir/ir_tcw.tif",
+  layer_prefix = "tcw",
+  file_id_prefix = ".*v061\\.",
+  file_id_suffix = "\\.Annual.*"
+)
+
+irrigated_ir <- prepare_single_layer(
+  africa_mask = ref,
+  filename = "data/raster/MAP_covariates/irrigated_areas/Irrigated_Areas_Global_5k.tif",
+  lyrnm = "irrigated",
+  outputdir = "outputs/raster/ir/"
+)
+
+elevation_ir <- prepare_single_layer(
+  africa_mask = ref,
+  filename = "data/raster/MAP_covariates/Elevation/SRTM_elevation.Synoptic.Overall.Data.5km.mean.tif",
+  lyrnm = "elevation",
+  outputdir = "outputs/raster/ir/"
+)
+
+
+
+rainfall <- rast_multi_layer(
+  data_dir = "data/raster/MAP_covariates/Rainfall/Annual/",
+  output_filename = temptif(),
+  layer_prefix = "rainfall",
+  file_id_prefix = ".*v2-0\\.",
+  file_id_suffix = "\\.Annual.*"
+)
+
+
+rainfall_ir <- writereadrast(
+  rainfall[[11:33]] |> crop(ref) |> mask(ref),
+  filename = "outputs/raster/ir/ir_rainfall.tif"
+)
+
 
 
 ##
