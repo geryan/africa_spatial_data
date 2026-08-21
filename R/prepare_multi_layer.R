@@ -4,13 +4,15 @@ prepare_multi_layer <- function(
     output_filename,
     layer_prefix,
     file_id_prefix,
-    file_id_suffix
+    file_id_suffix,
+    filetype_suffix = NULL
   ){
 
 
   r <- list.files(
     path = data_dir,
-    full.names = TRUE
+    full.names = TRUE,
+    pattern = filetype_suffix
   ) %>%
     sapply(
       FUN = rast
