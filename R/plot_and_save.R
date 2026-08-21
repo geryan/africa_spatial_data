@@ -97,24 +97,30 @@ plot_and_save <- function(
 
   if(!is.null(sub_plot_masks)){
     for(i in 1:length(sub_plot_masks)){
+
+      # crop() snaps to r's grid, so the result can sit up to half a cell off
+      # the mask's own extent -- more than the tolerance mask() allows, and more
+      # again if the two are at different resolutions. Resampling the mask onto
+      # the cropped raster puts both on one grid before masking.
+      sub_r <- crop(r, sub_plot_masks[i], snap = "out")
+      sub_mask <- resample(sub_plot_masks[i], sub_r, method = "near")
+
       plot_and_save(
-        r = r |>
-          crop(sub_plot_masks[i]) |>
-          mask(sub_plot_masks[i]),
+        r = mask(sub_r, sub_mask),
         filename = sprintf(
           "%s_%s",
           sub_plot_names[i],
           filename
         ),
         title = title, # map title
-        fill_label,
-        rm_guides,
-        output_dir,
-        option,
-        begin,
-        end,
-        fill_lims,
-        lookup
+        fill_label = fill_label,
+        rm_guides = rm_guides,
+        output_dir = output_dir,
+        option = option,
+        begin = begin,
+        end = end,
+        fill_lims = fill_lims,
+        lookup = lookup
       )
     }
   }
