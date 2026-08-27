@@ -60,7 +60,8 @@ tar_option_set(
     "readr",
     "countrycode",
     "tidyr",
-    "purrr"
+    "purrr",
+    "ecmwfr"
   ),
   format = "qs",
   # format = "file" targets re-hash their files to check for changes. Some of
@@ -1452,6 +1453,76 @@ list(
   ),
 
 
+
+  ######################
+
+  # ESA CCI / C3S annual land cover from the Copernicus CDS
+  # `satellite-land-cover`: 300 m, 1992-2022, 22-class UN FAO LCCS legend.
+  # https://cds.climate.copernicus.eu/datasets/satellite-land-cover
+  #
+  # Branched by year. Each branch pulls one year and rescales it onto the
+  # new_mask grid, so neither the global grid nor the 31-year stack is ever
+  # held whole -- every terra step streams to disk, see
+  # R/prepare_esa_landcover.R. An interrupted run resumes at the year it
+  # stopped on, and years already downloaded are never re-fetched.
+  #
+  # NEEDS A CDS TOKEN. Once per machine:
+  #   ecmwfr::wf_set_key(key = "<token from cds.climate.copernicus.eu/profile>")
+  # plus accepting the ESA CCI and VITO licences on the dataset page above,
+  # or every request comes back 403.
+
+  tar_target(
+    esa_landcover_years,
+    1992:2022
+  ),
+
+  # c(N, W, S, E) for the CDS server-side subset, taken from the analysis grid
+  # so the 129600 x 64800 global product never has to come down the wire
+  tar_target(
+    esa_landcover_box,
+    esa_landcover_area(read_rast(new_mask))
+  ),
+
+  tar_target(
+    esa_landcover_zip,
+    download_esa_landcover(
+      year = esa_landcover_years,
+      dest_dir = "data/raster/esa_landcover",
+      area = esa_landcover_box
+    ),
+    pattern = map(esa_landcover_years),
+    format = "file"
+  ),
+
+  # legend read from the NetCDF's own flag_values/flag_meanings
+  tar_target(
+    esa_landcover_lookup,
+    esa_landcover_legend(esa_landcover_zip[1])
+  ),
+
+  tar_target(
+    esa_landcover_year,
+    prepare_esa_landcover(
+      archive = esa_landcover_zip,
+      new_mask = read_rast(new_mask),
+      year = esa_landcover_years,
+      outputdir = "outputs/raster/esa_landcover"
+    ),
+    pattern = map(esa_landcover_zip, esa_landcover_years),
+    format = "file"
+  ),
+
+  # the deliverable: one multi-layer raster, one layer per year, on new_mask
+  tar_target(
+    esa_landcover_all,
+    stack_esa_landcover(
+      paths = esa_landcover_year,
+      years = esa_landcover_years,
+      lookup = esa_landcover_lookup,
+      filename = "outputs/raster/esa_landcover_all.tif"
+    ),
+    format = "file"
+  ),
   #####################
 
   tar_target(
