@@ -11,7 +11,11 @@
 #'
 #' Returns NULL (with a warning) if the attributes cannot be read, so that a
 #' legend hiccup never takes down a long unattended run -- the stack is simply
-#' written without categorical levels.
+#' written without categorical levels. On the real CDS files it does read:
+#' 1992 yields 38 classes, 0 = no_data through 220 = snow_and_ice.
+#'
+#' NB depends on esa_landcover_nc(), which lives in R/prepare_esa_landcover.R.
+#' Move the two files together.
 esa_landcover_legend <- function(archive, varname = "lccs_class"){
 
   scratch <- file.path(tempdir(), "esa_lc_legend")

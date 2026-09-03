@@ -16,6 +16,22 @@
 #' 129600 x 64800 grid. Downstream still crops defensively, so it is safe if
 #' the server ever ignores the request and returns a global file.
 #'
+#' Confirmed honoured: the delivered file is named
+#' ESACCI-LC-...-v2.0.7cds.area-subset.<N>.<E>.<S>.<W>.nc and opens at
+#' 26475 x 25575 (677,098,125 cells) for the African box, against
+#' 129600 x 64800 global. 446 MB zipped per year, 13 GB for 1992-2022.
+#'
+#' RE-DERIVING THE REQUEST SPEC RATHER THAN GUESSING AT IT. The CDS publishes
+#' the authoritative input schema and the valid parameter combinations, which
+#' is how the version/year lock below was established. No token needed:
+#'   curl .../api/retrieve/v1/processes/satellite-land-cover
+#'     -> inputs: names, enums and defaults for every parameter
+#'   curl .../api/retrieve/v1/processes/satellite-land-cover/constraints \
+#'     -X POST -H 'Content-Type: application/json' -d '{"inputs":{"year":["2016"]}}'
+#'     -> the values still selectable given that choice
+#' (base https://cds.climate.copernicus.eu). The same two endpoints work for
+#' any CDS dataset -- worth reaching for before trusting a remembered API.
+#'
 #' CREDENTIALS. Needs a CDS Personal Access Token, once per machine:
 #'   1. register at https://cds.climate.copernicus.eu and copy the token from
 #'      https://cds.climate.copernicus.eu/profile

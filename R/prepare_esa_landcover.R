@@ -1,7 +1,12 @@
 #' Rescale one year of ESA CCI land cover onto the new_mask grid
 #'
-#' The CDS delivers a zipped NetCDF holding five variables; only `lccs_class`
-#' (the land cover classification itself) is wanted.
+#' The CDS delivers a zipped NetCDF; only `lccs_class` (the land cover
+#' classification itself) is wanted. As delivered it holds eight subdatasets --
+#' lccs_class, processed_flag, current_pixel_state, observation_count,
+#' change_count, and the lat/lon/time bounds -- so the variable has to be
+#' named explicitly. `lccs_class` comes back as a single layer (the `time`
+#' dimension is length 1) and does carry a CRS, so the two guards below are
+#' belt-and-braces rather than load-bearing.
 #'
 #' MEMORY. Even subset to Africa the source is ~677 million cells at 300 m, so
 #' nothing is ever pulled into RAM: every terra step is handed a `filename` and

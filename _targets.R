@@ -1470,6 +1470,26 @@ list(
   #   ecmwfr::wf_set_key(key = "<token from cds.climate.copernicus.eu/profile>")
   # plus accepting the ESA CCI and VITO licences on the dataset page above,
   # or every request comes back 403.
+  #
+  # MOVING THESE TARGETS TO ANOTHER PROJECT
+  # The four R/esa_* and R/*_esa_landcover files are self-contained apart from
+  # terra and ecmwfr, but these target definitions are NOT. They depend on two
+  # things that live in this file, not in R/, and so will not travel:
+  #   read_rast()  -- defined at the top of _targets.R
+  #   new_mask     -- this project's analysis grid, itself a path target
+  # In a new project either port read_rast() across as well, or drop it and
+  # pass the reference grid straight in, e.g.
+  #   prepare_esa_landcover(archive = ..., new_mask = terra::rast(<ref path>))
+  # Nothing in the functions assumes the grid is 1 km or African: any
+  # SpatRaster works as the target grid, and mode-resampling handles the rest.
+  #
+  # AS BUILT (2026-08-27, 1992-2022):
+  #   esa_landcover_all  31 layers, 8705 x 8405, INT1U, categorical, 40 MB
+  #   per-year tifs      225 MB total   |  source zips  13 GB (446 MB/year)
+  #   legend             38 LCCS classes, read from the file, 0 = no_data
+  # The zips are only needed to rebuild esa_landcover_year; they can be
+  # deleted once the per-year tifs exist, at the cost of a re-download if a
+  # branch is ever invalidated.
 
   tar_target(
     esa_landcover_years,
@@ -1480,7 +1500,7 @@ list(
   # so the 129600 x 64800 global product never has to come down the wire
   tar_target(
     esa_landcover_box,
-    esa_landcover_area(read_rast(new_mask))
+    esa_landcover_area(read_rast(new_mask)),
   ),
 
   tar_target(
